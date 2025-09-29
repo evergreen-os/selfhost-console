@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { PoliciesClient } from '@gen/rest';
+import { PoliciesApi } from '@/lib/api/clients';
 import { validatePolicyBundle } from '@/features/policies/policyValidator.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,7 +62,7 @@ export default function PolicyEditorPage() {
     queryKey: ['policy', params.policyId],
     queryFn: async () => {
       if (isNew) return null;
-      const response = await PoliciesClient.getPolicy(params.policyId);
+      const response = await PoliciesApi.getPolicy(params.policyId);
       return response;
     }
   });
@@ -99,14 +99,14 @@ export default function PolicyEditorPage() {
       }
       setErrors([]);
       if (isNew) {
-        await PoliciesClient.createPolicy({
+        await PoliciesApi.createPolicy({
           name: bundle.name,
           orgId: bundle.orgId,
           bundle,
           signed: form.signed
         });
       } else {
-        await PoliciesClient.updatePolicy(params.policyId, {
+        await PoliciesApi.updatePolicy(params.policyId, {
           name: bundle.name,
           orgId: bundle.orgId,
           bundle,

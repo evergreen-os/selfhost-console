@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { EventsClient } from '@gen/rest';
+import { EventsApi } from '@/lib/api/clients';
 import { filterEvents } from '@/features/events/filterEvents.js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,7 +19,7 @@ export default function EventsPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['events', search, severity],
     queryFn: async () => {
-      const response = await EventsClient.listEvents({ search: search || undefined, severity: severity || undefined });
+      const response = await EventsApi.listEvents({ search: search || undefined, severity: severity || undefined });
       return response.events;
     }
   });
@@ -33,7 +33,7 @@ export default function EventsPage() {
   }, [data, search, severity]);
 
   async function handleExport(format: 'csv' | 'json') {
-    const blob = await EventsClient.exportEvents({ search: search || undefined, severity: severity || undefined }, format);
+    const blob = await EventsApi.exportEvents({ search: search || undefined, severity: severity || undefined }, format);
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { UsersClient } from '@gen/rest';
+import { UsersApi } from '@/lib/api/clients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,13 +20,13 @@ export default function UsersPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await UsersClient.listUsers();
+      const response = await UsersApi.listUsers();
       return response.users;
     }
   });
 
   const inviteMutation = useMutation({
-    mutationFn: () => UsersClient.inviteUser(inviteForm),
+    mutationFn: () => UsersApi.inviteUser(inviteForm),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setInviteForm({ email: '', role: 'Admin' });
@@ -35,12 +35,12 @@ export default function UsersPage() {
 
   const updateRoleMutation = useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: 'Owner' | 'Admin' | 'Auditor' }) =>
-      UsersClient.updateUserRole(userId, { role }),
+      UsersApi.updateUserRole(userId, { role }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   });
 
   const deactivateMutation = useMutation({
-    mutationFn: (userId: string) => UsersClient.deactivateUser(userId),
+    mutationFn: (userId: string) => UsersApi.deactivateUser(userId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] })
   });
 

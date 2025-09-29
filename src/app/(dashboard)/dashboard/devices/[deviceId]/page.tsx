@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DevicesClient } from '@gen/rest';
+import { DevicesApi } from '@/lib/api/clients';
 import { detailView } from '@/features/devices/detailView.js';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,18 +20,18 @@ export default function DeviceDetailPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['device', params.deviceId],
     queryFn: async () => {
-      const response = await DevicesClient.getDevice(params.deviceId);
+      const response = await DevicesApi.getDevice(params.deviceId);
       return detailView(response);
     }
   });
 
   const syncMutation = useMutation({
-    mutationFn: () => DevicesClient.triggerDeviceSync(params.deviceId),
+    mutationFn: () => DevicesApi.triggerDeviceSync(params.deviceId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['device', params.deviceId] })
   });
 
   const decommissionMutation = useMutation({
-    mutationFn: () => DevicesClient.decommissionDevice(params.deviceId),
+    mutationFn: () => DevicesApi.decommissionDevice(params.deviceId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['devices'] });
       router.push('/dashboard/devices');

@@ -1,16 +1,26 @@
 #!/usr/bin/env node
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
-const outDir = path.resolve(rootDir, '..', 'gen');
+const projectRoot = path.resolve(rootDir, '..');
 
-mkdirSync(path.join(outDir, 'rest'), { recursive: true });
-mkdirSync(path.join(outDir, 'grpc'), { recursive: true });
+const bufBinary = path.resolve(projectRoot, 'node_modules', '.bin', 'buf');
 
-const banner = `// Auto-generated client placeholder. Replace by running shared-spec generators.`;
+const command = spawnSync(bufBinary, ['generate'], {
+  cwd: projectRoot,
+  stdio: 'inherit'
+});
 
-writeFileSync(path.join(outDir, 'README.md'), `${banner}\n`);
+if (command.error) {
+  console.error('Failed to run buf generate. Ensure @bufbuild/buf is installed.');
+  console.error(command.error);
+  process.exit(1);
+}
 
-console.log('Generated REST and gRPC client placeholders to gen/.');
+if (command.status !== 0) {
+  process.exit(command.status ?? 1);
+}
+
+console.log('Generated TypeScript clients into gen/.');
