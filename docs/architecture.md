@@ -4,7 +4,7 @@
 - **Next.js 14 App Router** with React 18 powers the UI and API routes.
 - **TailwindCSS + shadcn-inspired primitives** provide styling and reusable components.
 - **React Query** coordinates data fetching, caching, and optimistic updates.
-- **Generated REST + gRPC-Web clients** wrap backend integrations (placed in `gen/`).
+- **Buf-generated REST + gRPC-Web clients** wrap backend integrations (placed in `gen/`).
 - **Node test runner** continues to cover domain helpers, while **Jest + Playwright** validate UI behaviour.
 
 ## Directory layout
@@ -34,8 +34,8 @@ src/
 2. **Session provider** – `useSessionStore` consumes the API routes to load, refresh, and revoke sessions while
    exposing RBAC helpers to the UI.
 3. **Dashboard routes** – Each route (`/dashboard/devices`, `/dashboard/policies`, etc.) uses React Query to call the
-   generated REST clients and transform data through the existing feature helpers (`filterDevices`, `detailView`,
-   `validatePolicyBundle`, etc.).
+   Buf-generated clients (REST with JSON parsing and Connect for device commands) and transform data through the existing feature
+   helpers (`filterDevices`, `detailView`, `validatePolicyBundle`, etc.).
 4. **Mutations** – Actions such as device sync, policy publish, user role updates, and tenant edits call the generated
    clients and invalidate relevant queries to keep the UI consistent.
 5. **Event exports** – The events page calls the REST export endpoint and streams a Blob for CSV/JSON downloads, while

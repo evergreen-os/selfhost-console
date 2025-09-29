@@ -70,16 +70,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    loadSession().catch(() => {
-      // handled in loadSession
-    });
+    void loadSession();
   }, [loadSession]);
 
   const signIn = useCallback<SessionStoreValue['signIn']>(async (credentials) => {
     try {
       const data = await jsonRequest<SessionResponse>('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify(credentials)
+        body: JSON.stringify(credentials),
+        headers: { Accept: 'application/json' }
       });
       setSession(data.session);
       setStatus('authenticated');

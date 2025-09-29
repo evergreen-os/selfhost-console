@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DevicesClient } from '@gen/rest';
+import { DevicesApi } from '@/lib/api/clients';
 import { filterDevices } from '@/features/devices/filterDevices.js';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,10 @@ export default function DevicesPage() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['devices', status, search],
     queryFn: async () => {
-      const response = await DevicesClient.listDevices({ status: status || undefined, search: search || undefined });
+      const response = await DevicesApi.listDevices({
+        status: status || undefined,
+        search: search || undefined
+      });
       return response.devices;
     }
   });

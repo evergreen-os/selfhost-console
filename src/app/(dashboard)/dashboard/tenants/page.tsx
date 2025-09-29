@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { TenantsClient } from '@gen/rest';
+import { TenantsApi } from '@/lib/api/clients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -25,7 +25,7 @@ export default function TenantsPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['tenants'],
     queryFn: async () => {
-      const response = await TenantsClient.listTenants();
+      const response = await TenantsApi.listTenants();
       return response.tenants;
     }
   });
@@ -35,13 +35,13 @@ export default function TenantsPage() {
   const upsertMutation = useMutation({
     mutationFn: async () => {
       if (selectedTenant) {
-        await TenantsClient.updateTenant(selectedTenant, {
+        await TenantsApi.updateTenant(selectedTenant, {
           name: form.name,
           parentId: form.parentId || undefined,
           reseller: form.reseller
         });
       } else {
-        await TenantsClient.createTenant({
+        await TenantsApi.createTenant({
           name: form.name,
           parentId: form.parentId || undefined,
           reseller: form.reseller

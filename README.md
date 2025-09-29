@@ -15,7 +15,7 @@ and manage reseller hierarchies while complying with the PRD requirements.
   catalogue assignments.
 - **Events & audit timeline** with keyword and severity filters plus CSV/JSON exports.
 - **User & tenant administration** including role changes, invites, and reseller-aware hierarchy visualisation.
-- **Generated API clients** for REST and gRPC-Web access to the `selfhost-backend`, alongside a regeneration script.
+- **Buf-generated API clients** for REST responses and Connect gRPC-Web operations against the `selfhost-backend`, alongside a regeneration script.
 - **Full testing toolchain**: legacy `node:test` domain coverage, new Jest + React Testing Library suites, and
   Playwright smoke scenarios with ≥90% coverage enforcement.
 
@@ -29,11 +29,13 @@ and manage reseller hierarchies while complying with the PRD requirements.
    ```bash
    BACKEND_URL=http://localhost:4000
    NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+   NEXT_PUBLIC_BACKEND_GRPC_URL=http://localhost:4000
    ```
-3. **Generate API clients** from [`shared-specs`](https://github.com/evergreen-os/shared-specs) when specs change:
+3. **Generate API clients** from the bundled proto workspace using Buf (installs via npm):
    ```bash
    npm run generate:clients
    ```
+   This command relies on the locally installed `@bufbuild/buf`, `protoc-gen-es`, and `protoc-gen-connect-es` binaries and outputs to `gen/`.
 4. **Run the app in development**:
    ```bash
    npm run dev

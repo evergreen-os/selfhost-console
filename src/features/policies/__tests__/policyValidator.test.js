@@ -71,7 +71,7 @@ describe('validatePolicyBundle', () => {
     const result = validatePolicyBundle(basePolicy);
 
     assert.equal(result.valid, false);
-    assert.match(result.errors[0], /groupIds must be provided/);
+    assert.match(result.errors[0], /groupIds is required/);
   });
 
   it('ensures update channel is one of the supported values', () => {
@@ -90,7 +90,7 @@ describe('validatePolicyBundle', () => {
     const result = validatePolicyBundle(basePolicy);
 
     assert.equal(result.valid, false);
-    assert.match(result.errors[0], /security configuration is required/);
+    assert.match(result.errors[0], /configuration\.security is required/);
   });
 });
 

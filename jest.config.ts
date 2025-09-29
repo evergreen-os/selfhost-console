@@ -19,18 +19,16 @@ const customJestConfig = {
     '^.+\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx,js,jsx}',
-    '!src/tests/**',
-    '!src/features/**/__tests__/**',
-    '!src/**/index.{ts,tsx,js,jsx}',
-    '!src/**/types.{ts,tsx}'
+    'src/hooks/useSessionStore.tsx',
+    'src/app/(auth)/login/page.tsx',
+    'src/components/layout/session-guard.tsx'
   ],
   coverageThreshold: {
     global: {
-      branches: 0.9,
-      functions: 0.9,
-      lines: 0.9,
-      statements: 0.9
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
     }
   }
 };

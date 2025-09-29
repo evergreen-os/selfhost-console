@@ -1,0 +1,276 @@
+syntax = "proto3";
+
+package evergreen.console.v1;
+
+
+option go_package = "github.com/evergreen-os/selfhost-console/pkg/consolepb";
+
+message Empty {}
+
+
+message DeviceApp {
+  string id = 1;
+  string name = 2;
+  string version = 3;
+}
+
+message DeviceHealthSnapshot {
+  string disk = 1;
+  string battery = 2;
+}
+
+message DeviceUpdateStatus {
+  string channel = 1;
+  string last_sync = 2;
+  string pending_version = 3;
+}
+
+message DeviceEvent {
+  string id = 1;
+  string occurred_at = 2;
+  string actor = 3;
+  string action = 4;
+  string severity = 5;
+  string message = 6;
+}
+
+message DeviceSummary {
+  string id = 1;
+  string hostname = 2;
+  string model = 3;
+  string os_version = 4;
+  string policy_version = 5;
+  string health = 6;
+  string org_id = 7;
+  string last_seen = 8;
+  string status = 9;
+}
+
+message DeviceDetail {
+  DeviceSummary summary = 1;
+  string serial_number = 2;
+  repeated DeviceApp installed_apps = 3;
+  DeviceHealthSnapshot health_snapshot = 4;
+  DeviceUpdateStatus updates = 5;
+  repeated DeviceEvent events = 6;
+}
+
+message ListDevicesRequest {
+  string org_id = 1;
+  string status = 2;
+  string search = 3;
+  string last_seen_after = 4;
+  string last_seen_before = 5;
+  int32 page = 6;
+  int32 page_size = 7;
+  string sort_by = 8;
+  bool descending = 9;
+}
+
+message ListDevicesResponse {
+  repeated DeviceSummary devices = 1;
+  int32 total = 2;
+}
+
+message GetDeviceRequest {
+  string device_id = 1;
+}
+
+message DeviceDetailResponse {
+  DeviceDetail device = 1;
+}
+
+message DeviceCommandRequest {
+  string device_id = 1;
+}
+
+message DeviceCommandResponse {
+  bool accepted = 1;
+  string status = 2;
+}
+
+service DeviceService {
+  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse);
+  rpc GetDevice(GetDeviceRequest) returns (DeviceDetailResponse);
+  rpc TriggerDeviceSync(DeviceCommandRequest) returns (DeviceCommandResponse);
+  rpc DecommissionDevice(DeviceCommandRequest) returns (DeviceCommandResponse);
+}
+
+message PolicyAppAssignment {
+  string id = 1;
+  string target = 2;
+  repeated string group_ids = 3;
+}
+
+message PolicyBrowserSettings {
+  string homepage_url = 1;
+  bool allow_popups = 2;
+}
+
+message PolicyNetworkWifi {
+  string ssid = 1;
+  string security = 2;
+}
+
+message PolicyNetworkSettings {
+  repeated PolicyNetworkWifi wifi_networks = 1;
+}
+
+message PolicySecuritySettings {
+  bool disk_encryption = 1;
+  int32 lock_after_minutes = 2;
+}
+
+message PolicyBundle {
+  repeated PolicyAppAssignment apps = 1;
+  string update_channel = 2;
+  PolicyBrowserSettings browser = 3;
+  PolicyNetworkSettings network = 4;
+  PolicySecuritySettings security = 5;
+}
+
+message PolicySignature {
+  bool signed = 1;
+  string signer = 2;
+}
+
+message PolicyAuditEntry {
+  string timestamp = 1;
+  string actor = 2;
+  string action = 3;
+  repeated string changes = 4;
+}
+
+message Policy {
+  string id = 1;
+  string org_id = 2;
+  string name = 3;
+  string version = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  PolicySignature signature = 7;
+  PolicyBundle bundle = 8;
+  repeated PolicyAuditEntry audit_log = 9;
+}
+
+message ListPoliciesRequest {
+  string org_id = 1;
+}
+
+message ListPoliciesResponse {
+  repeated Policy policies = 1;
+}
+
+message GetPolicyRequest {
+  string policy_id = 1;
+}
+
+message UpsertPolicyRequest {
+  Policy policy = 1;
+}
+
+message DeletePolicyRequest {
+  string policy_id = 1;
+}
+
+service PolicyService {
+  rpc ListPolicies(ListPoliciesRequest) returns (ListPoliciesResponse);
+  rpc GetPolicy(GetPolicyRequest) returns (Policy);
+  rpc UpsertPolicy(UpsertPolicyRequest) returns (Policy);
+  rpc DeletePolicy(DeletePolicyRequest) returns (Empty);
+}
+
+message EventRecord {
+  string id = 1;
+  string device_id = 2;
+  string org_id = 3;
+  string occurred_at = 4;
+  string actor = 5;
+  string action = 6;
+  string severity = 7;
+  string message = 8;
+}
+
+message ListEventsRequest {
+  string device_id = 1;
+  string org_id = 2;
+  string action = 3;
+  string severity = 4;
+  string search = 5;
+  string start_time = 6;
+  string end_time = 7;
+}
+
+message ListEventsResponse {
+  repeated EventRecord events = 1;
+}
+
+service EventService {
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+}
+
+message UserRecord {
+  string id = 1;
+  string email = 2;
+  string role = 3;
+  string status = 4;
+  string created_at = 5;
+}
+
+message ListUsersRequest {
+  string org_id = 1;
+}
+
+message ListUsersResponse {
+  repeated UserRecord users = 1;
+}
+
+message InviteUserRequest {
+  string email = 1;
+  string role = 2;
+}
+
+message InviteUserResponse {
+  UserRecord user = 1;
+}
+
+message UpdateUserRoleRequest {
+  string user_id = 1;
+  string role = 2;
+}
+
+message DeactivateUserRequest {
+  string user_id = 1;
+}
+
+service UserService {
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc InviteUser(InviteUserRequest) returns (InviteUserResponse);
+  rpc UpdateUserRole(UpdateUserRoleRequest) returns (UserRecord);
+  rpc DeactivateUser(DeactivateUserRequest) returns (UserRecord);
+}
+
+message TenantRecord {
+  string id = 1;
+  string name = 2;
+  string parent_id = 3;
+  bool reseller = 4;
+  string created_at = 5;
+}
+
+message ListTenantsRequest {
+  string reseller_id = 1;
+}
+
+message ListTenantsResponse {
+  repeated TenantRecord tenants = 1;
+}
+
+message UpsertTenantRequest {
+  TenantRecord tenant = 1;
+}
+
+service TenantService {
+  rpc ListTenants(ListTenantsRequest) returns (ListTenantsResponse);
+  rpc UpsertTenant(UpsertTenantRequest) returns (TenantRecord);
+}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { PoliciesClient } from '@gen/rest';
+import { PoliciesApi } from '@/lib/api/clients';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui/table';
@@ -14,7 +14,7 @@ export default function PoliciesPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['policies'],
     queryFn: async () => {
-      const response = await PoliciesClient.listPolicies();
+      const response = await PoliciesApi.listPolicies();
       return response.policies;
     }
   });
@@ -64,7 +64,7 @@ export default function PoliciesPage() {
                   <TableCell>{policy.version}</TableCell>
                   <TableCell>{formatDate(policy.createdAt)}</TableCell>
                   <TableCell>{formatDate(policy.updatedAt)}</TableCell>
-                  <TableCell>{policy.signed ? 'Signed' : 'Unsigned'}</TableCell>
+                  <TableCell>{policy.signature?.signed ? 'Signed' : 'Unsigned'}</TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/policies/${policy.id}/edit`}>{canEdit ? 'Edit' : 'View'}</Link>
